@@ -17,7 +17,7 @@ MPICC = mpic++
 # C++ linker
 LD = g++
 # C++ standard compiler options
-CXXFLAGS = -Wall -w -O3 -g -D __NOEXTERN_FOR_CINCLUDE -D _NOT_MYUTILS_DEBUG -arch $(ARCH)
+CXXFLAGS = -Wall -w -O3 -g -D __NOEXTERN_FOR_CINCLUDE -D _NOT_MYUTILS_DEBUG
 # C++ compiler options for gcat library code
 CC_OPTIONS = $(CXXFLAGS) -fPIC
 # C++ linker options
