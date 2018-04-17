@@ -44,6 +44,8 @@ private:
 public:
 	// Constructor
 	Codon61Count(string filename, string name="", DAG* dag=0);
+	// Alternative constructor
+	Codon61Count(vector< vector<int> > _ct_in, filename, string name="", DAG* dag=0);
 	// Copy constructor
 	Codon61Count(const Codon61Count& x);
 	// Destructor

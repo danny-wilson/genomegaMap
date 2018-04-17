@@ -408,12 +408,76 @@ codon_count_XMLParser::codon_count_XMLParser(const XMLCh* const uri, const XMLCh
 	const int nattr = 5;
 	const char* attrNames[nattr] = {"id","distribution","file","format","encoding"};
 	vector<string> sattr = attributesToStrings(nattr,attrNames,attrs);
-	if(sattr[3]!="fasta") error("codon_count_XMLParser: only fasta format supported");
-	// Instantiate the variable
-	if(sattr[4]=="codon61") {
-		new Codon61Count(sattr[2],sattr[0],getDAG());
+	if(sattr[3]=="counts") {
+		if(sattr[4]=="codon61") {
+			// Based on https://github.com/danny-wilson/gcat-lmm/blob/master/src/lmm/lmmXML.cpp continuous_matrix_file_XMLParser::continuous_matrix_file_XMLParser
+			// Read values from file
+			time_t start = clock();
+			vector< vector<int> > mat(0);
+			vector<int> val(0);
+			ifstream in(sattr[2].c_str());
+			if(!in.good()) {
+				string errMsg = "codon_count_XMLParser: file " + sattr[2] + " not found";
+				error(errMsg.c_str());
+			}
+			// Read the file one line at a time: impose constraint that the number of elements is the same for all lines
+			int intin;
+			string line;
+			getline(in,line);
+			bool firstline = true;
+			int nrows=0, ncols;
+			while(!in.eof()) {
+				if(!in.good()) {
+					string errMsg = "codon_count_XMLParser: unexpected problem reading " + sattr[2];
+					error(errMsg.c_str());
+				}
+				// Convert to vector of doubles
+				istringstream linein(line);
+				int n = 0;
+				while(linein >> intin) {
+					if(linein.bad()) {
+						string errMsg = "codon_count_XMLParser: could not read integer in " + sattr[2];
+						error(errMsg.c_str());
+					}
+					val.push_back(intin);
+					++n;
+				}
+				if(firstline) {
+					ncols = n;
+					firstline = false;
+					if(ncols!=62) {
+						stringstream errMsg;
+						errMsg << "codon_count_XMLParser: row " << nrows+1 << " contained " << n << " columns, not " << 62 << " as expected";
+						error(errMsg.str().c_str());
+					}
+					mat.push_back(val);
+					val = vector<int>(0);
+				} else {
+					if(ncols!=n) {
+						stringstream errMsg;
+						errMsg << "codon_count_XMLParser: row " << nrows+1 << " contained " << n << " columns, not " << ncols << " as expected";
+						error(errMsg.str().c_str());
+					}
+					mat.push_back(val);
+					val = vector<int>(0);
+				}
+				++nrows;
+				getline(in,line);
+			}
+			cout << "Read " << nrows << " rows " << ncols << " columns  from " << sattr[2] << " in " << (clock()-start)/CLOCKS_PER_SEC << " s" << endl;
+			// Instantiate the variable
+			new Codon61Count(mat,sattr[0],getDAG());
+		}
+		else error("codon_count_XMLParser only codon61 encoding supported");
+	} else if(sattr[3]=="fasta") {
+		// Instantiate the variable
+		if(sattr[4]=="codon61") {
+			new Codon61Count(sattr[2],sattr[0],getDAG());
+		}
+		else error("codon_count_XMLParser only codon61 encoding supported");
+	} else {
+		error("codon_count_XMLParser: only fasta and counts formats supported");
 	}
-	else error("codon_count_XMLParser only codon61 encoding supported");
 	if(sattr[1]!="") getDAG()->assign_distribution_to_random_variable(sattr[0],attrNames[1],sattr[1]);
 	getDAG()->set_constant(sattr[0]);
 }
