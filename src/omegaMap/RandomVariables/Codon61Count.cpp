@@ -41,7 +41,7 @@ Codon61Count::Codon61Count(string filename, string name, DAG* dag) : DAGcomponen
 // Alternative constructor
 Codon61Count::Codon61Count(vector< vector<int> > _ct_in, string name, DAG* dag) : DAGcomponent(name,dag,"Codon61Count"), RandomVariable(), _filename(""), _ct(_ct_in) {
 	// Assumes all rows have the same length (i.e. number of columns)
-	if(_ct[0].size!=62) error("Codon61Count::Codon61Count(): exactly 62 columns expected")
+	if(_ct[0].size()!=62) error("Codon61Count::Codon61Count(): exactly 62 columns expected");
 	_length = _ct.size();
 	_n = 0;
 	for(int i=0;i<62;i++) _n += _ct[0][i];
