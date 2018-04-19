@@ -73,6 +73,7 @@ mydouble omegaMapUnlinked::likelihood(const RandomVariable* rv, const Value* val
 	
 	const Codon61Count& ct = *((const Codon61Count*)val);
 	const NY98_ParentDependentRateMatrix& mut = *get_mut();
+	vector<double> pi = mut.get_pi()->get_doubles();
 	const double N = (double)(ct.n());
 	
 	mydouble lik(1.0);
@@ -91,8 +92,8 @@ mydouble omegaMapUnlinked::likelihood(const RandomVariable* rv, const Value* val
 			int anc;
 			// Sum over the population ancestral amino acid
 			for(anc=0;anc<61;anc++) {
-				// Likelihood conditional on ancestor (assume equal codon usage, for now!)
-				double likposanc = -log(61.0);
+				// Likelihood conditional on ancestor, multiplied by ancestral probability
+				double likposanc = log(pi[anc]);
 				// Ancestral amino acid
 				const char aAA = omegaMapUtils::oneLetterCodes[anc];
 				// Enumerate the partition
