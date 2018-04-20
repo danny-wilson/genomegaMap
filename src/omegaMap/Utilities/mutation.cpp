@@ -1458,7 +1458,8 @@ void NY98_61::diagonalize_symmetric(Matrix<double>& Eigenvec, Vector<double>& Ei
 void NY98_61::diagonalize_symmetric(Matrix<double>& Eigenvec, double& meanrate, Vector<double>& Eigenval, const double kappa, const double omega, const vector<double> &pi) {
 	static Matrix<double> _pamlwork(61,61);
 	// Build the symmetric matrix A and store temporarily in 'Eigenvec'
-	NY98_61::build_A(Eigenvec,1.0,kappa,omega,pi);
+	// Do it under *neutrality* first to compute the neutral mean rate
+	NY98_61::build_A(Eigenvec,1.0,kappa,1.0,pi);
 	// Calculate the mean rate for the asymmetric transition rate matrix C
 	meanrate = 0.0;
 	int i,j;
@@ -1471,6 +1472,9 @@ void NY98_61::diagonalize_symmetric(Matrix<double>& Eigenvec, double& meanrate, 
 			}
 		}
 	}
+	// Build the symmetric matrix A and store temporarily in 'Eigenvec'
+	// Do it a second time, this time no longer under neutrality
+	NY98_61::build_A(Eigenvec,1.0,kappa,omega,pi);
 	// Compute the eigendecomposition of the symmetric matrix A
 	Eigenval.resize(61);
 	eigenRealSym(Eigenvec.array,61,Eigenval.element,_pamlwork.array);
