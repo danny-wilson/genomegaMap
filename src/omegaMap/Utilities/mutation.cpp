@@ -1467,7 +1467,7 @@ void NY98_61::diagonalize_symmetric(Matrix<double>& Eigenvec, double& meanrate, 
 		for(j=0;j<61;j++) {
 			if(i!=j) {
 				const double sqrtpi_j = sqrt(pi[j]);
-				meanrate += sqrt_pi_i*sqrtpi_j*Eigenvec[i][j];
+				meanrate += sqrtpi_i*sqrtpi_j*Eigenvec[i][j];
 			}
 		}
 	}
