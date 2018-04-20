@@ -33,12 +33,10 @@ namespace gcat_omegaMap {
 	
 const string NY98_ParentDependentRateMatrixParameterNames[4] = {"theta","kappa","omega","pi"};
 
-NY98_ParentDependentRateMatrix::NY98_ParentDependentRateMatrix(const int n, string name, DAG* dag) : DAGcomponent(name,dag,"NY98_ParentDependentRateMatrix"), Transformation(NY98_ParentDependentRateMatrixParameterNames,4), _n(n), _theta_changed(true), _kappa_changed(true), _omega_changed(true), _pi_changed(true), _has_changed(Vector<bool>(n,true)),
-_Eigenvec(n), _previous_Eigenvec(n), _Eigenval(n), _previous_Eigenval(n), _P(n), _previous_P(n), _is_block_start(n,false), _previous_is_block_start(n,false) {
+NY98_ParentDependentRateMatrix::NY98_ParentDependentRateMatrix(const int n, string name, DAG* dag) : DAGcomponent(name,dag,"NY98_ParentDependentRateMatrix"), Transformation(NY98_ParentDependentRateMatrixParameterNames,4), _n(n), _theta_changed(true), _kappa_changed(true), _omega_changed(true), _pi_changed(true), _has_changed(Vector<bool>(n,true)), _Eigenvec(n), _previous_Eigenvec(n), _Eigenval(n), _previous_Eigenval(n), _meanrate(n), _previous_meanrate(n), _P(n), _previous_P(n), _is_block_start(n,false), _previous_is_block_start(n,false) {
 }
 
-NY98_ParentDependentRateMatrix::NY98_ParentDependentRateMatrix(const NY98_ParentDependentRateMatrix& x) : DAGcomponent(x), Transformation(x), _n(x._n), _theta_changed(x._theta_changed), _kappa_changed(x._kappa_changed), _omega_changed(x._omega_changed), _pi_changed(x._pi_changed), _has_changed(x._has_changed), 
-_Eigenvec(x._Eigenvec), _previous_Eigenvec(x._previous_Eigenvec), _Eigenval(x._Eigenval), _previous_Eigenval(x._previous_Eigenval), _P(x._P), _previous_P(x._previous_P), _is_block_start(x._is_block_start), _previous_is_block_start(x._previous_is_block_start) {
+NY98_ParentDependentRateMatrix::NY98_ParentDependentRateMatrix(const NY98_ParentDependentRateMatrix& x) : DAGcomponent(x), Transformation(x), _n(x._n), _theta_changed(x._theta_changed), _kappa_changed(x._kappa_changed), _omega_changed(x._omega_changed), _pi_changed(x._pi_changed), _has_changed(x._has_changed), _Eigenvec(x._Eigenvec), _previous_Eigenvec(x._previous_Eigenvec), _Eigenval(x._Eigenval), _previous_Eigenval(x._previous_Eigenval), _meanrate(x._meanrate), _previous_meanrate(x._previous_meanrate), _P(x._P), _previous_P(x._previous_P), _is_block_start(x._is_block_start), _previous_is_block_start(x._previous_is_block_start) {
 }
 
 int NY98_ParentDependentRateMatrix::length() const {
@@ -66,7 +64,7 @@ void NY98_ParentDependentRateMatrix::recalculate() const {
 				if((_kappa_changed || _pi_changed || omega.has_changed(pos))) {
 					const double omega_pos = omega.get_double(pos);
 					// Build an (unscaled) symmetric version of the rate matrix and diagonalize it
-					NY98_61::diagonalize_symmetric(_Eigenvec[pos],_Eigenval[pos],kappa,omega_pos,pi);
+					NY98_61::diagonalize_symmetric(_Eigenvec[pos],_meanrate[pos],_Eigenval[pos],kappa,omega_pos,pi);
 				}
 			}
 			else {
@@ -86,7 +84,9 @@ void NY98_ParentDependentRateMatrix::recalculate() const {
 			if(omega.is_block_start(pos) && (_theta_changed || _kappa_changed || _pi_changed || omega.has_changed(pos))) {
 				// Under neutrality, the expected rate from diagonalize_symmetric is 3*(2+kappa)/61
 				// Therefore thetaT is defined as twice the expected number of mutations under neutrality
-				NY98_61::build_Rt(_P[pos],_Eigenvec[pos],_Eigenval[pos],pi,theta*61.0/6.0/(2.0+kappa),1.0);
+				//NY98_61::build_Rt(_P[pos],_Eigenvec[pos],_Eigenval[pos],pi,theta*61.0/6.0/(2.0+kappa),1.0);
+				// No longer using this equal codon usage approximation, but using the computed mean rate:
+				NY98_61::build_Rt(_P[pos],_Eigenvec[pos],_Eigenval[pos],pi,(theta/2.0)/_meanrate[pos],1.0);
 				// Sweep through to build final approximate parent-independent mutation rate matrix
 				int i,j;
 				for(i=0;i<61;i++) {
@@ -210,6 +210,7 @@ void NY98_ParentDependentRateMatrix::receive_signal_from_parent(const Value* v, 
 				if(_is_block_start[pos]) {
 					_previous_Eigenvec[pos] = _Eigenvec[pos];
 					_previous_Eigenval[pos] = _Eigenval[pos];
+					_previous_meanrate[pos] = _meanrate[pos];
 					_previous_P[pos] = _P[pos];
 				}
 			}
@@ -224,6 +225,7 @@ void NY98_ParentDependentRateMatrix::receive_signal_from_parent(const Value* v, 
 				if(_previous_is_block_start[pos]) {
 					_Eigenvec[pos] = _previous_Eigenvec[pos];
 					_Eigenval[pos] = _previous_Eigenval[pos];
+					_meanrate[pos] = _previous_meanrate[pos];
 					_P[pos] = _previous_P[pos];
 				}
 			}
@@ -244,6 +246,7 @@ void NY98_ParentDependentRateMatrix::receive_signal_from_parent(const Value* v, 
 				if(_is_block_start[pos]) {
 					_previous_Eigenvec[pos] = _Eigenvec[pos];
 					_previous_Eigenval[pos] = _Eigenval[pos];
+					_previous_meanrate[pos] = _meanrate[pos];
 					_previous_P[pos] = _P[pos];
 				}
 			}
@@ -260,6 +263,7 @@ void NY98_ParentDependentRateMatrix::receive_signal_from_parent(const Value* v, 
 				if(_previous_is_block_start[pos]) {
 					_Eigenvec[pos] = _previous_Eigenvec[pos];
 					_Eigenval[pos] = _previous_Eigenval[pos];
+					_meanrate[pos] = _previous_meanrate[pos];
 					_P[pos] = _previous_P[pos];
 				}
 			}
@@ -278,6 +282,7 @@ void NY98_ParentDependentRateMatrix::receive_signal_from_parent(const Value* v, 
 				if(_is_block_start[pos]) {
 					_previous_Eigenvec[pos] = _Eigenvec[pos];
 					_previous_Eigenval[pos] = _Eigenval[pos];
+					_previous_meanrate[pos] = _meanrate[pos];
 					_previous_P[pos] = _P[pos];
 				}
 			}
@@ -292,6 +297,7 @@ void NY98_ParentDependentRateMatrix::receive_signal_from_parent(const Value* v, 
 				if(_previous_is_block_start[pos]) {
 					_Eigenvec[pos] = _previous_Eigenvec[pos];
 					_Eigenval[pos] = _previous_Eigenval[pos];
+					_meanrate[pos] = _previous_meanrate[pos];
 					_P[pos] = _previous_P[pos];
 				}
 			}

@@ -148,6 +148,8 @@ public:
 	static void build_A(Matrix<double>& C, const double mu, const double kappa, const double omega, const vector<double> &pi);
 	// Build a transition probability matrix
 	static void diagonalize_symmetric(Matrix<double>& Eigenvec, Vector<double>& Eigenval, const double kappa, const double omega, const vector<double> &pi);
+	// Build a transition probability matrix and return the mean rate
+	static void diagonalize_symmetric(Matrix<double>& Eigenvec, double& meanrate, Vector<double>& Eigenval, const double kappa, const double omega, const vector<double> &pi);
 };
 
 class FSM_Binary : public Mutation_Matrix {

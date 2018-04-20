@@ -1454,6 +1454,28 @@ void NY98_61::diagonalize_symmetric(Matrix<double>& Eigenvec, Vector<double>& Ei
 	eigenRealSym(Eigenvec.array,61,Eigenval.element,_pamlwork.array);
 }
 
+// Build a transition probability matrix and return the mean rate
+void NY98_61::diagonalize_symmetric(Matrix<double>& Eigenvec, double& meanrate, Vector<double>& Eigenval, const double kappa, const double omega, const vector<double> &pi) {
+	static Matrix<double> _pamlwork(61,61);
+	// Build the symmetric matrix A and store temporarily in 'Eigenvec'
+	NY98_61::build_A(Eigenvec,1.0,kappa,omega,pi);
+	// Calculate the mean rate for the asymmetric transition rate matrix C
+	meanrate = 0.0;
+	int i,j;
+	for(i=0;i<61;i++) {
+		const double sqrtpi_i = sqrt(pi[i]);
+		for(j=0;j<61;j++) {
+			if(i!=j) {
+				const double sqrtpi_j = sqrt(pi[j]);
+				meanrate += sqrt_pi_i*sqrtpi_j*Eigenvec[i][j];
+			}
+		}
+	}
+	// Compute the eigendecomposition of the symmetric matrix A
+	Eigenval.resize(61);
+	eigenRealSym(Eigenvec.array,61,Eigenval.element,_pamlwork.array);
+}
+
 void FSM_Binary::set_defaults() {
 	n_states = 2;
 	state_freq.resize(n_states,0.5);

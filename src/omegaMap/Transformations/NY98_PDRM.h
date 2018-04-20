@@ -56,9 +56,10 @@ private:
 	mutable bool _theta_changed, _kappa_changed, _omega_changed, _pi_changed;
 	// Storage for has_changed() method
 	Vector<bool> _has_changed;
-	// Storage for calculate of eigenvectors and eigenvalues
+	// Storage for calculation of eigenvectors, eigenvalues and mean rates
 	mutable Vector< Matrix<double> > _Eigenvec, _previous_Eigenvec;
 	mutable Vector< Vector<double> > _Eigenval, _previous_Eigenval;
+	mutable Vector< double > _meanrate, previous_meanrate;
 	// Storage for rate matrix
 	mutable Vector< Matrix<double> > _P, _previous_P;
 	// Storage for the start of blocks, for efficiency
