@@ -198,18 +198,11 @@ void Mutation_Matrix::build_Pt(Matrix<double>& Pt, const Matrix<double>& SymEige
 	// Introduce the equilibrium frequencies
 	for(i=0;i<n;i++) {
 		const double sqrtpi = sqrt(pi[i]);
-		for(j=0;j<i;j++) {
-			Pt[i][j] *= sqrtpi;
-			Pt[j][i] /= sqrtpi;
-			// Ensure there are no zero or negative entries
-			if(Pt[i][j]<=0.0) Pt[i][j] = numeric_limits<double>::min();
-			if(Pt[j][i]<=0.0) Pt[i][j] = numeric_limits<double>::min();
-		}
-		// Ensure there are no zero or negative entries
-		if(Pt[i][i]<=0.0) Pt[i][i] = numeric_limits<double>::min();
-		for(j=i+1;j<n;j++) {
-			Pt[i][j] *= sqrtpi;
-			Pt[j][i] /= sqrtpi;
+        // Bug fix 25 April 2018: apply the same transformation to all entries including the diagonal
+		for(j=0;j<n;j++) {
+            // Bug fix 25 April 2018: reverse the order of multiplication and division
+			Pt[i][j] /= sqrtpi;
+			Pt[j][i] *= sqrtpi;
 			// Ensure there are no zero or negative entries
 			if(Pt[i][j]<=0.0) Pt[i][j] = numeric_limits<double>::min();
 			if(Pt[j][i]<=0.0) Pt[i][j] = numeric_limits<double>::min();
@@ -241,18 +234,11 @@ void Mutation_Matrix::build_Rt(Matrix<double>& Rt, const Matrix<double>& SymEige
 	// Introduce the equilibrium frequencies
 	for(i=0;i<n;i++) {
 		const double sqrtpi = sqrt(pi[i]);
-		for(j=0;j<i;j++) {
-			Rt[i][j] *= sqrtpi;
-			Rt[j][i] /= sqrtpi;
-			// Ensure there are no zero or negative entries
-			if(Rt[i][j]<=0.0) Rt[i][j] = numeric_limits<double>::min();
-			if(Rt[j][i]<=0.0) Rt[i][j] = numeric_limits<double>::min();
-		}
-		// Ensure there are no zero or negative entries
-		if(Rt[i][i]<=0.0) Rt[i][i] = numeric_limits<double>::min();
-		for(j=i+1;j<n;j++) {
-			Rt[i][j] *= sqrtpi;
-			Rt[j][i] /= sqrtpi;
+        // Bug fix 25 April 2018: apply the same transformation to all entries including the diagonal
+        for(j=0;j<n;j++) {
+            // Bug fix 25 April 2018: reverse the order of multiplication and division
+			Rt[i][j] /= sqrtpi;
+			Rt[j][i] *= sqrtpi;
 			// Ensure there are no zero or negative entries
 			if(Rt[i][j]<=0.0) Rt[i][j] = numeric_limits<double>::min();
 			if(Rt[j][i]<=0.0) Rt[i][j] = numeric_limits<double>::min();
@@ -1439,11 +1425,12 @@ void NY98_61::build_A(Matrix<double>& C, const double mu, const double kappa, co
 	}
 	
 	/*Compute the diagonal*/
+    /*Bug fix 25 April 2018: A is not a regular rate matrix. Its diagonal matches that of the rate matrix*/
 	for(i=0;i<61;i++)
 	{
-		double rowsum=0.0;
-		for(j=0;j<61;j++) rowsum+=C[i][j];
-		C[i][i]=-rowsum;
+		double notrowsum=0.0;
+        for(j=0;j<61;j++) notrowsum+=C[i][j]*sqrt(pi[j]/pi[i]);
+		C[i][i]=-notrowsum;
 	}
 }
 
@@ -1461,16 +1448,11 @@ void NY98_61::diagonalize_symmetric(Matrix<double>& Eigenvec, double& meanrate, 
 	// Do it under *neutrality* first to compute the neutral mean rate
 	NY98_61::build_A(Eigenvec,1.0,kappa,1.0,pi);
 	// Calculate the mean rate for the asymmetric transition rate matrix C
+    // Updated following bug fixes 25 April 2018: the diagonal of A equals the diagonal of C
 	meanrate = 0.0;
 	int i,j;
 	for(i=0;i<61;i++) {
-		const double sqrtpi_i = sqrt(pi[i]);
-		for(j=0;j<61;j++) {
-			if(i!=j) {
-				const double sqrtpi_j = sqrt(pi[j]);
-				meanrate += sqrtpi_i*sqrtpi_j*Eigenvec[i][j];
-			}
-		}
+        meanrate -= pi[i]*Eigenvec[i][i];
 	}
 	// Build the symmetric matrix A and store temporarily in 'Eigenvec'
 	// Do it a second time, this time no longer under neutrality

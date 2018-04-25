@@ -65,6 +65,10 @@ void NY98_ParentDependentRateMatrix::recalculate() const {
 					const double omega_pos = omega.get_double(pos);
 					// Build an (unscaled) symmetric version of the rate matrix and diagonalize it
 					NY98_61::diagonalize_symmetric(_Eigenvec[pos],_meanrate[pos],_Eigenval[pos],kappa,omega_pos,pi);
+                    //cout << "NY98_61::diagonalize_symmetric() with kappa " << kappa;
+                    //cout << " omega " << omega_pos << " pi " << pi[0] << " ";
+                    //cout << pi[1] << " " << pi[2] << " " << pi[3] << " ... returned ";
+                    //cout << _meanrate[pos] << endl;
 				}
 			}
 			else {
@@ -87,7 +91,11 @@ void NY98_ParentDependentRateMatrix::recalculate() const {
 				//NY98_61::build_Rt(_P[pos],_Eigenvec[pos],_Eigenval[pos],pi,theta*61.0/6.0/(2.0+kappa),1.0);
 				// No longer using this equal codon usage approximation, but using the computed mean rate:
 				NY98_61::build_Rt(_P[pos],_Eigenvec[pos],_Eigenval[pos],pi,(theta/2.0)/_meanrate[pos],1.0);
-				// Sweep through to build final approximate parent-independent mutation rate matrix
+                //cout << "NY98_61::build_Rt() called with scale " << (theta/2.0)/_meanrate[pos] << " lambda 1.0 ";
+                //cout << " pi " << pi[0] << " ";
+                //cout << pi[1] << " " << pi[2] << " " << pi[3] << " ...";
+                //cout << _meanrate[pos] << endl;
+                // Sweep through to build final approximate parent-independent mutation rate matrix
 				int i,j;
 				for(i=0;i<61;i++) {
 					double rii = _P[pos][i][i];
@@ -95,7 +103,10 @@ void NY98_ParentDependentRateMatrix::recalculate() const {
 						if(j!=i) _P[pos][i][j]/=rii;
 					}
 					_P[pos][i][i] = 1.0e-6; //numeric_limits<double>::min();
-				}		
+				}
+                //cout << "P[0][0..4] = " << _P[pos][0][0] << " " << _P[pos][0][1] << " ";
+                //cout << _P[pos][0][2] << " " << _P[pos][0][3] << " " << _P[pos][0][4];
+                //cout << endl;
 			}
 		}
 	}

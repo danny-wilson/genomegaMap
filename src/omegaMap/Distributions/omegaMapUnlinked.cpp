@@ -78,15 +78,24 @@ mydouble omegaMapUnlinked::likelihood(const RandomVariable* rv, const Value* val
 	
 	mydouble lik(1.0);
 	int pos;
+    //cout << "pi =";
+    //for(int i=0;i<61;i++) cout << " " << pi[i];
+    //cout << endl;
+    //cout << "theta = " << mut.get_theta()->get_double() << " ";
+    //cout << "kappa = " << mut.get_kappa()->get_double() << " ";
+    //cout << endl;
 	for(pos=0;pos<ct.length();pos++) {
 		if(_mut_changed && mut.has_changed(pos)) {
 			// Precalculate common factors in the likelihood at this site (i.e. irrespective of ancestral codon)
 			double phi = lgamma(N+1.);
 			int i;
+            //if(pos==0) cout << "cti =";
 			for(i=0;i<61;i++) {
 				const int cti = ct[pos][i];
 				phi -= lgamma((double)(cti+1));
+                //if(pos==0) cout << " " << cti;
 			}
+            //if(pos==0) cout << endl << "phi = " << phi << endl << "likposanc =";
 			
 			_likpos[ix][pos] = mydouble(0.0);
 			int anc;
@@ -112,6 +121,12 @@ mydouble omegaMapUnlinked::likelihood(const RandomVariable* rv, const Value* val
 					else likposanc += lgamma(cti+muti) - lgamma(muti);
 				}
 				likposanc += lgamma(ttheta) - lgamma(N+ttheta) - log(N+ttheta) + log(ttheta);
+                //if(pos==0) {
+                    //cout << "anc " << anc << ": alpha =";
+                    //for(i=0;i<61;i++) cout << " " << mut.get_double(pos,anc,i);
+                    //cout << endl;
+                    //cout << " " << likposanc;
+                //}
 
 				mydouble mylikposanc;
 				mylikposanc.setlog(likposanc);
@@ -121,10 +136,12 @@ mydouble omegaMapUnlinked::likelihood(const RandomVariable* rv, const Value* val
 			mydouble myphi;
 			myphi.setlog(phi);
 			_likpos[ix][pos] *= myphi;
+            //if(pos==0) cout << endl << "myphi = " << myphi.LOG() << endl;
 		}
 		// Multiply likelihood by position-specific likelihood
 		lik *= _likpos[ix][pos];
-	}
+        //cout << "pos " << pos << ": omega = " << mut.get_omega()->get_double(pos) << " loglik = " << _likpos[ix][pos].LOG() << endl;
+    }
 	return lik;
 }
 
