@@ -74,7 +74,6 @@ mydouble omegaMapUnlinked::likelihood(const RandomVariable* rv, const Value* val
 	const Codon61Count& ct = *((const Codon61Count*)val);
 	const NY98_ParentDependentRateMatrix& mut = *get_mut();
 	vector<double> pi = mut.get_pi()->get_doubles();
-	const double N = (double)(ct.n());
 	
 	mydouble lik(1.0);
 	int pos;
@@ -87,14 +86,16 @@ mydouble omegaMapUnlinked::likelihood(const RandomVariable* rv, const Value* val
 	for(pos=0;pos<ct.length();pos++) {
 		if(_mut_changed && mut.has_changed(pos)) {
 			// Precalculate common factors in the likelihood at this site (i.e. irrespective of ancestral codon)
-			double phi = lgamma(N+1.);
 			int i;
+			double phi = 0., N = 0.;
             //if(pos==0) cout << "cti =";
 			for(i=0;i<61;i++) {
 				const int cti = ct[pos][i];
 				phi -= lgamma((double)(cti+1));
+				N += (double)cti;
                 //if(pos==0) cout << " " << cti;
 			}
+			phi += lgamma(N+1.);
             //if(pos==0) cout << endl << "phi = " << phi << endl << "likposanc =";
 			
 			_likpos[ix][pos] = mydouble(0.0);
