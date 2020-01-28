@@ -1,6 +1,6 @@
 ###################################################
 #
-# Makefile for gcat-omegaMap
+# Makefile for genomegaMap
 #
 ###################################################
 
@@ -29,13 +29,12 @@ CC_OPTIONS = $(CXXFLAGS) -fPIC
 LNK_OPTIONS = -Wl,--no-as-needed -lxerces-c -L./
 
 #
-# Build gcat-omegaMap
+# Build genomegaMap
 #
 
-LIB_OMEGAMAP_OBJECTS = \
-		./Distribution_omegaMapNCD.o\
-		./Distribution_omegaMapUnlinked.o\
-		./MCMC_omegaMapMoves.o\
+LIBGENOMEGAMAP_OBJECTS = \
+		./Distribution_genomegaMap.o\
+		./MCMC_genomegaMapMoves.o\
 		./RandomVariable_Codon61Count.o\
 		./RandomVariable_Codon61Sequence.o\
 		./Transformation_NY98_PDRM.o\
@@ -43,72 +42,69 @@ LIB_OMEGAMAP_OBJECTS = \
 		./Transformation_Omega2GammaVector.o\
 		./Transformation_ParentDependentRateMatrix.o\
 		./Utility_mutation.o\
-		./Utility_omegaMapUtils.o\
+		./Utility_genomegaMapUtils.o\
 		./Utility_paml.o\
-		./omegaMapLibrary.o\
-		./omegaMapXML.o
+		./genomegaMapLibrary.o\
+		./genomegaMapXML.o
 
-all : libgcat_omegaMap.so
+all : libgenomegaMap.so
 
 clean : cleanobj
-	rm libgcat_omegaMap.so
+	rm libgenomegaMap.so
 
 cleanobj :
-	rm $(LIB_OMEGAMAP_OBJECTS)
+	rm $(LIBGENOMEGAMAP_OBJECTS)
 
 #install : gcat
 #		cp gcat gcat
 
-libgcat_omegaMap.so : $(LIB_OMEGAMAP_OBJECTS)
-	$(LD) $(LNK_OPTIONS) -lgsl -lgcat-core -shared -o libgcat_omegaMap.so $(LIB_OMEGAMAP_OBJECTS)
+libgenomegaMap.so : $(LIBGENOMEGAMAP_OBJECTS)
+	$(LD) $(LNK_OPTIONS) -lgsl -lgcat-core -shared -o libgenomegaMap.so $(LIBGENOMEGAMAP_OBJECTS)
 
 #
-# Build the parts of gcat_omegaMap
+# Build the parts of genomegaMap
 #
 
-./Distribution_omegaMapNCD.o : src/omegaMap/Distributions/omegaMapNCD.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/Distributions/omegaMapNCD.cpp -c $(INCLUDE) -o ./Distribution_omegaMapNCD.o
+./Distribution_genomegaMap.o : src/genomegaMap/Distributions/genomegaMap.cpp
+	$(CC) $(CC_OPTIONS) src/genomegaMap/Distributions/genomegaMap.cpp -c $(INCLUDE) -o ./Distribution_genomegaMap.o
 
-./Distribution_omegaMapUnlinked.o : src/omegaMap/Distributions/omegaMapUnlinked.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/Distributions/omegaMapUnlinked.cpp -c $(INCLUDE) -o ./Distribution_omegaMapUnlinked.o
+./MCMC_genomegaMapMoves.o : src/genomegaMap/Inference/MCMC/genomegaMapMoves.cpp
+	$(CC) $(CC_OPTIONS) src/genomegaMap/Inference/MCMC/genomegaMapMoves.cpp -c $(INCLUDE) -o ./MCMC_genomegaMapMoves.o
 
-./MCMC_omegaMapMoves.o : src/omegaMap/Inference/MCMC/omegaMapMoves.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/Inference/MCMC/omegaMapMoves.cpp -c $(INCLUDE) -o ./MCMC_omegaMapMoves.o
+./RandomVariable_Codon61Count.o : src/genomegaMap/RandomVariables/Codon61Count.cpp
+	$(CC) $(CC_OPTIONS) src/genomegaMap/RandomVariables/Codon61Count.cpp -c $(INCLUDE) -o ./RandomVariable_Codon61Count.o
 
-./RandomVariable_Codon61Count.o : src/omegaMap/RandomVariables/Codon61Count.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/RandomVariables/Codon61Count.cpp -c $(INCLUDE) -o ./RandomVariable_Codon61Count.o
+./RandomVariable_Codon61Sequence.o : src/genomegaMap/RandomVariables/Codon61Sequence.cpp
+	$(CC) $(CC_OPTIONS) src/genomegaMap/RandomVariables/Codon61Sequence.cpp -c $(INCLUDE) -o ./RandomVariable_Codon61Sequence.o
 
-./RandomVariable_Codon61Sequence.o : src/omegaMap/RandomVariables/Codon61Sequence.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/RandomVariables/Codon61Sequence.cpp -c $(INCLUDE) -o ./RandomVariable_Codon61Sequence.o
+./Transformation_NY98_PDRM.o : src/genomegaMap/Transformations/NY98_PDRM.cpp
+	$(CC) $(CC_OPTIONS) src/genomegaMap/Transformations/NY98_PDRM.cpp -c $(INCLUDE) -o ./Transformation_NY98_PDRM.o
 
-./Transformation_NY98_PDRM.o : src/omegaMap/Transformations/NY98_PDRM.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/Transformations/NY98_PDRM.cpp -c $(INCLUDE) -o ./Transformation_NY98_PDRM.o
+./Transformation_NY98_PDRM_Single.o : src/genomegaMap/Transformations/NY98_PDRM_Single.cpp
+	$(CC) $(CC_OPTIONS) src/genomegaMap/Transformations/NY98_PDRM_Single.cpp -c $(INCLUDE) -o ./Transformation_NY98_PDRM_Single.o
 
-./Transformation_NY98_PDRM_Single.o : src/omegaMap/Transformations/NY98_PDRM_Single.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/Transformations/NY98_PDRM_Single.cpp -c $(INCLUDE) -o ./Transformation_NY98_PDRM_Single.o
+./Transformation_Omega2GammaVector.o : src/genomegaMap/Transformations/Omega2GammaVector.cpp
+	$(CC) $(CC_OPTIONS) src/genomegaMap/Transformations/Omega2GammaVector.cpp -c $(INCLUDE) -o ./Transformation_Omega2GammaVector.o
 
-./Transformation_Omega2GammaVector.o : src/omegaMap/Transformations/Omega2GammaVector.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/Transformations/Omega2GammaVector.cpp -c $(INCLUDE) -o ./Transformation_Omega2GammaVector.o
+./Transformation_ParentDependentRateMatrix.o : src/genomegaMap/Transformations/ParentDependentRateMatrix.cpp
+	$(CC) $(CC_OPTIONS) src/genomegaMap/Transformations/ParentDependentRateMatrix.cpp -c $(INCLUDE) -o ./Transformation_ParentDependentRateMatrix.o
 
-./Transformation_ParentDependentRateMatrix.o : src/omegaMap/Transformations/ParentDependentRateMatrix.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/Transformations/ParentDependentRateMatrix.cpp -c $(INCLUDE) -o ./Transformation_ParentDependentRateMatrix.o
+./Utility_mutation.o : src/genomegaMap/Utilities/mutation.cpp
+	$(CC) $(CC_OPTIONS) src/genomegaMap/Utilities/mutation.cpp -c $(INCLUDE) -o ./Utility_mutation.o
 
-./Utility_mutation.o : src/omegaMap/Utilities/mutation.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/Utilities/mutation.cpp -c $(INCLUDE) -o ./Utility_mutation.o
+./Utility_genomegaMapUtils.o : src/genomegaMap/Utilities/genomegaMapUtils.cpp
+	$(CC) $(CC_OPTIONS) src/genomegaMap/Utilities/genomegaMapUtils.cpp -c $(INCLUDE) -o ./Utility_genomegaMapUtils.o
 
-./Utility_omegaMapUtils.o : src/omegaMap/Utilities/omegaMapUtils.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/Utilities/omegaMapUtils.cpp -c $(INCLUDE) -o ./Utility_omegaMapUtils.o
+./Utility_paml.o : src/genomegaMap/Utilities/paml.c
+	$(CC) $(CC_OPTIONS) src/genomegaMap/Utilities/paml.c -c $(INCLUDE) -o ./Utility_paml.o
 
-./Utility_paml.o : src/omegaMap/Utilities/paml.c
-	$(CC) $(CC_OPTIONS) src/omegaMap/Utilities/paml.c -c $(INCLUDE) -o ./Utility_paml.o
+./genomegaMapLibrary.o : src/genomegaMap/genomegaMapLibrary.cpp
+	$(CC) $(CC_OPTIONS) src/genomegaMap/genomegaMapLibrary.cpp -c $(INCLUDE) -o ./genomegaMapLibrary.o
 
-./omegaMapLibrary.o : src/omegaMap/omegaMapLibrary.cpp
-	$(CC) $(CC_OPTIONS) src/omegaMap/omegaMapLibrary.cpp -c $(INCLUDE) -o ./omegaMapLibrary.o
+./genomegaMapXML.o : src/genomegaMap/genomegaMapXML.cpp src/genomegaMap/genomegaMap1.0.xsd.h
+	$(CC) $(CC_OPTIONS) src/genomegaMap/genomegaMapXML.cpp -c $(INCLUDE) -o ./genomegaMapXML.o
 
-./omegaMapXML.o : src/omegaMap/omegaMapXML.cpp src/omegaMap/gcat_omegaMap1.0.xsd.h
-	$(CC) $(CC_OPTIONS) src/omegaMap/omegaMapXML.cpp -c $(INCLUDE) -o ./omegaMapXML.o
-
-src/omegaMap/gcat_omegaMap1.0.xsd.h : src/omegaMap/omegaMap1.0.xsd
-	(cd src/omegaMap && xxd -i omegaMap1.0.xsd > gcat_omegaMap1.0.xsd.h)
+src/genomegaMap/genomegaMap1.0.xsd.h : src/genomegaMap/genomegaMap1.0.xsd
+	(cd src/genomegaMap && xxd -i genomegaMap1.0.xsd > genomegaMap1.0.xsd.h)
 
 ##### END RUN ####

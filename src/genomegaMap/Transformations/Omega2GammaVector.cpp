@@ -1,34 +1,33 @@
 /*  Copyright 2018 Daniel Wilson.
  *
- *  Part of the omegaMap library.
+ *  Part of the genomegaMap library.
  *
- *  The omegaMap library is free software: you can redistribute it and/or modify
+ *  The genomegaMap library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  The omegaMap library is distributed in the hope that it will be useful,
+ *  The genomegaMap library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  GNU Lesser General Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with the omegaMap library. If not, see <http://www.gnu.org/licenses/>.
+ *  along with the genomegaMap library. If not, see <http://www.gnu.org/licenses/>.
  */
 /*
  *  omega2gammaVector.cpp
  *  gcat
  *
  *  Created by Daniel Wilson on 03/03/2010.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
  *
  */
-#include <omegaMap/Transformations/Omega2GammaVector.h>
-#include <omegaMap/Utilities/omegaMapUtils.h>
+#include <genomegaMap/Transformations/Omega2GammaVector.h>
+#include <genomegaMap/Utilities/omegaMapUtils.h>
 
 using namespace gcat;
 
-namespace gcat_omegaMap {
+namespace genomegaMap {
 	
 const string Omega2GammaVectorTransformParameterNames[1] = {"omega"};
 
@@ -138,5 +137,5 @@ double Omega2GammaVectorTransform::toGamma(const double omega) const {
 	return omega + ((omega>1) ? omegaMapUtils::LambertW(-omega*exp(-omega)) : omegaMapUtils::LambertW1(-omega*exp(-omega)));
 }
 	
-} // namespace gcat_omegaMap
+} // namespace genomegaMap
 

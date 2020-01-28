@@ -1,39 +1,38 @@
 /*  Copyright 2018 Daniel Wilson.
  *
- *  Part of the omegaMap library.
+ *  Part of the genomegaMap library.
  *
- *  The omegaMap library is free software: you can redistribute it and/or modify
+ *  The genomegaMap library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  The omegaMap library is distributed in the hope that it will be useful,
+ *  The genomegaMap library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  GNU Lesser General Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with the omegaMap library. If not, see <http://www.gnu.org/licenses/>.
+ *  along with the genomegaMap library. If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- *  omegaMap_unlinked.h
+ *  genomegaMap.h
  *  gcat
  *
  *  Created by Daniel Wilson on 06/03/2010.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
  *
  */
-#ifndef _OMEGAMAP_UNLINKED_H_
-#define _OMEGAMAP_UNLINKED_H_
+#ifndef _GENOMEGAMAP_H_
+#define _GENOMEGAMAP_H_
 #include <DAG/Distribution.h>
 #include <Variables/ContinuousVector.h>
-#include <omegaMap/Transformations/NY98_PDRM.h>
+#include <genomegaMap/Transformations/NY98_PDRM.h>
 
 using namespace gcat;
 
-namespace gcat_omegaMap {
+namespace genomegaMap {
 	
-class omegaMapUnlinked : public Distribution {
+class genomegaMap : public Distribution {
 private:
 	// Indicates changes to parameter
 	bool _mut_changed;
@@ -44,9 +43,9 @@ private:
 	
 public:
 	// Constructor
-	omegaMapUnlinked(string name="", DAG* dag=0);
+	genomegaMap(string name="", DAG* dag=0);
 	// Copy constructor
-	omegaMapUnlinked(const omegaMapUnlinked& x);
+	genomegaMap(const genomegaMap& x);
 	// Implementation of virtual function inherited from base class Distribution
 	bool check_random_variable_type(RandomVariable* random_variable);
 	// Implementation of virtual function inherited from base class DependentVariable
@@ -66,6 +65,6 @@ public:
 	void receive_signal_from_parent(const Value* v, const Variable::Signal sgl);
 };
 	
-} // namespace gcat_omegaMap
+} // namespace genomegaMap
 
-#endif // _OMEGAMAP_UNLINKED_H_
+#endif // _GENOMEGAMAP_H_

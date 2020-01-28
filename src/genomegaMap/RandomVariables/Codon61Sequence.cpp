@@ -1,33 +1,32 @@
 /*  Copyright 2018 Daniel Wilson.
  *
- *  Part of the omegaMap library.
+ *  Part of the genomegaMap library.
  *
- *  The omegaMap library is free software: you can redistribute it and/or modify
+ *  The genomegaMap library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  The omegaMap library is distributed in the hope that it will be useful,
+ *  The genomegaMap library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  GNU Lesser General Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with the omegaMap library. If not, see <http://www.gnu.org/licenses/>.
+ *  along with the genomegaMap library. If not, see <http://www.gnu.org/licenses/>.
  */
 /*
  *  Codon61Sequence.cpp
  *  gcat
  *
  *  Created by Daniel Wilson on 25/04/2010.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
  *
  */
-#include <omegaMap/RandomVariables/Codon61Sequence.h>
+#include <genomegaMap/RandomVariables/Codon61Sequence.h>
 
 using namespace gcat;
 
-namespace gcat_omegaMap {
+namespace genomegaMap {
 	
 const char* Codon61SequenceRVStrings[61] = {"TTT","TTC","TTA","TTG","TCT","TCC","TCA","TCG","TAT","TAC","TGT","TGC","TGG","CTT","CTC","CTA","CTG","CCT","CCC","CCA","CCG","CAT","CAC","CAA","CAG","CGT","CGC","CGA","CGG","ATT","ATC","ATA","ATG","ACT","ACC","ACA","ACG","AAT","AAC","AAA","AAG","AGT","AGC","AGA","AGG","GTT","GTC","GTA","GTG","GCT","GCC","GCA","GCG","GAT","GAC","GAA","GAG","GGT","GGC","GGA","GGG"};
 
@@ -181,4 +180,4 @@ void Codon61SequenceRV::change_value(vector<int> &value, Variable::Signal sgl) {
 	send_signal_to_children(sgl);
 }
 	
-} // namespace gcat_omegaMap
+} // namespace genomegaMap

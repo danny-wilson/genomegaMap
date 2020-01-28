@@ -1,36 +1,35 @@
 /*  Copyright 2018 Daniel Wilson.
  *
- *  Part of the omegaMap library.
+ *  Part of the genomegaMap library.
  *
- *  The omegaMap library is free software: you can redistribute it and/or modify
+ *  The genomegaMap library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  The omegaMap library is distributed in the hope that it will be useful,
+ *  The genomegaMap library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  GNU Lesser General Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with the omegaMap library. If not, see <http://www.gnu.org/licenses/>.
+ *  along with the genomegaMap library. If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- *  omegaMapUtils.cpp
+ *  genomegaMapUtils.cpp
  *  gcat
  *
  *  Created by Daniel Wilson on 10/15/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
  *
  */
-#include <omegaMap/Utilities/omegaMapUtils.h>
+#include <genomegaMap/Utilities/genomegaMapUtils.h>
 #include <gsl/gsl_sf_lambert.h>
 #include <gsl/gsl_sf_hyperg.h>
 #include <cstdio>
 #include <math.h>
 #include <myerror.h>
 
-namespace omegaMapUtils {
+namespace genomegaMapUtils {
 	const double SQRT2PI = 2.5066282746310;
 	const char* oneLetterCodes = "FFLLSSSSYYCCWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG-";
 
@@ -41,7 +40,7 @@ namespace omegaMapUtils {
 		int i; 
 		const double eps=4.0e-16, em1=0.3678794411714423215955237701614608; 
 		double p,e,t,w;
-		if (dbgW) fprintf(stderr,"omegaMapNCDUtils::LambertW(): z=%g\n",z);
+		if (dbgW) fprintf(stderr,"genomegaMapUtils::LambertW(): z=%g\n",z);
 		if (z<-em1) return log(-1.);
 		if (0.0==z) return 0.0;
 		if (z<-em1+1e-4) { // series near -em1 in sqrt(q)
@@ -75,7 +74,7 @@ namespace omegaMapUtils {
 		}
 		return w;
 		/* should never get here */
-		myutils::error("omegaMapNCDUtils::LambertW(): No convergence at z"); 
+		myutils::error("genomegaMapUtils::LambertW(): No convergence at z");
 		return 0.;
 	}
 	
@@ -86,7 +85,7 @@ namespace omegaMapUtils {
 		const double eps=4.0e-16, em1=0.3678794411714423215955237701614608; 
 		double p,e,t,w,l1,l2;
 		if (z<-em1 || z>=0.0 || isinf(z) || isnan(z)) { 
-			myutils::error("omegaMapNCDUtils::LambertW1(): bad argument %g");
+			myutils::error("genomegaMapUtils::LambertW1(): bad argument %g");
 		}
 		/* initial approx for iteration... */
 		if (z<-1e-6) { /* series about -1/e */
@@ -108,7 +107,7 @@ namespace omegaMapUtils {
 		}
 		/* should never get here */
 		return -z;
-		myutils::error("omegaMapNCDUtils::LambertW1(): No convergence at z=%g");
+		myutils::error("genomegaMapUtils::LambertW1(): No convergence at z=%g");
 		return 0.;
 	}
 	

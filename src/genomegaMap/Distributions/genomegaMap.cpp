@@ -1,74 +1,73 @@
 /*  Copyright 2018 Daniel Wilson.
  *
- *  Part of the omegaMap library.
+ *  Part of the genomegaMap library.
  *
- *  The omegaMap library is free software: you can redistribute it and/or modify
+ *  The genomegaMap library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  The omegaMap library is distributed in the hope that it will be useful,
+ *  The genomegaMap library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  GNU Lesser General Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with the omegaMap library. If not, see <http://www.gnu.org/licenses/>.
+ *  along with the genomegaMap library. If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- *  omegaMap_unlinked.cpp
+ *  genomegaMap.cpp
  *  gcat
  *
  *  Created by Daniel Wilson on 06/03/2010.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
  *
  */
-#include <omegaMap/Distributions/omegaMapUnlinked.h>
-#include <omegaMap/RandomVariables/Codon61Count.h>
-#include <omegaMap/Utilities/omegaMapUtils.h>
+#include <genomegaMap/Distributions/genomegaMap.h>
+#include <genomegaMap/RandomVariables/Codon61Count.h>
+#include <genomegaMap/Utilities/genomegaMapUtils.h>
 #include <gsl/gsl_sf_hyperg.h>
 
 using namespace gcat;
 
-namespace gcat_omegaMap {
+namespace genomegaMap {
 	
-const string omegaMapUnlinkedParameterNames[1] = {"mut"};
+const string genomegaMapParameterNames[1] = {"mut"};
 
-omegaMapUnlinked::omegaMapUnlinked(string name, DAG* dag) : DAGcomponent(name,dag,"omegaMapUnlinked"), Distribution(omegaMapUnlinkedParameterNames,1), _mut_changed(true) {
+genomegaMap::genomegaMap(string name, DAG* dag) : DAGcomponent(name,dag,"genomegaMap"), Distribution(genomegaMapParameterNames,1), _mut_changed(true) {
 }
 
-omegaMapUnlinked::omegaMapUnlinked(const omegaMapUnlinked& x) : DAGcomponent(x), Distribution(x), _mut_changed(x._mut_changed), _likpos(x._likpos), _previous_likpos(x._previous_likpos), _rv_index(x._rv_index) {
+genomegaMap::genomegaMap(const genomegaMap& x) : DAGcomponent(x), Distribution(x), _mut_changed(x._mut_changed), _likpos(x._likpos), _previous_likpos(x._previous_likpos), _rv_index(x._rv_index) {
 }
 
-bool omegaMapUnlinked::check_random_variable_type(RandomVariable* random_variable) {
+bool genomegaMap::check_random_variable_type(RandomVariable* random_variable) {
 	// Insist on the particular RandomVariable (not just Variable) as it also specifies the encoding
 	return(dynamic_cast<Codon61Count*>(random_variable));
 	return false;
 }
 
-bool omegaMapUnlinked::check_parameter_type(const int i, Variable* parameter) {
+bool genomegaMap::check_parameter_type(const int i, Variable* parameter) {
 	switch(i) {
 		case 0:	//	mut
 			// Insist on the particular Transformation (not just MatrixVariable) as it also specifies the size, encoding, etc.
 			return(dynamic_cast<NY98_ParentDependentRateMatrix*>(parameter));
 		default:
-			error("omegaMapUnlinked::check_parameter_type(): parameter not found");
+			error("genomegaMap::check_parameter_type(): parameter not found");
 	}
 	return false;
 }
 
-void omegaMapUnlinked::set_mut(NY98_ParentDependentRateMatrix* mut) {
+void genomegaMap::set_mut(NY98_ParentDependentRateMatrix* mut) {
 	set_parameter(0,(Variable*)mut);
 }
 
-const NY98_ParentDependentRateMatrix* omegaMapUnlinked::get_mut() const {
+const NY98_ParentDependentRateMatrix* genomegaMap::get_mut() const {
 	return (const NY98_ParentDependentRateMatrix*)get_parameter(0);
 }
 
-mydouble omegaMapUnlinked::likelihood(const RandomVariable* rv, const Value* val) {
+mydouble genomegaMap::likelihood(const RandomVariable* rv, const Value* val) {
 	// Remember: there may be multiple child RVs!
 	map< const RandomVariable*, int >::iterator it = _rv_index.find(rv);
-	if(it==_rv_index.end()) error("omegaMapUnlinked::likelihood(): RandomVariable not recognised");
+	if(it==_rv_index.end()) error("genomegaMap::likelihood(): RandomVariable not recognised");
 	const int ix = it->second;
 	
 	const Codon61Count& ct = *((const Codon61Count*)val);
@@ -105,7 +104,7 @@ mydouble omegaMapUnlinked::likelihood(const RandomVariable* rv, const Value* val
 				// Likelihood conditional on ancestor, multiplied by ancestral probability
 				double likposanc = log(pi[anc]);
 				// Ancestral amino acid
-				const char aAA = omegaMapUtils::oneLetterCodes[anc];
+				const char aAA = genomegaMapUtils::oneLetterCodes[anc];
 				// Enumerate the partition
 				double pt1 = 0;			// Number of observed individuals in that partition
 				double ptheta = 0;		// Total mutation rate of codons in that partition
@@ -114,7 +113,7 @@ mydouble omegaMapUnlinked::likelihood(const RandomVariable* rv, const Value* val
 					const double cti = (double)ct[pos][i];
 					const double muti = mut.get_double(pos,anc,i);
 					ttheta += muti;
-					if(omegaMapUtils::oneLetterCodes[i]==aAA) {
+					if(genomegaMapUtils::oneLetterCodes[i]==aAA) {
 						pt1 += cti;
 						ptheta += muti;
 					}
@@ -146,7 +145,7 @@ mydouble omegaMapUnlinked::likelihood(const RandomVariable* rv, const Value* val
 	return lik;
 }
 
-void omegaMapUnlinked::add_random_variable(RandomVariable* random_variable) {
+void genomegaMap::add_random_variable(RandomVariable* random_variable) {
 	Distribution::add_random_variable(random_variable);
 	const int ix = n_random_variables()-1;
 	_rv_index.insert(pair< RandomVariable*, int>(random_variable,ix));
@@ -155,11 +154,11 @@ void omegaMapUnlinked::add_random_variable(RandomVariable* random_variable) {
 	_previous_likpos.resize(n_random_variables(),rv->length());
 }
 
-void omegaMapUnlinked::remove_random_variable(RandomVariable* random_variable) {
-	error("omegaMapUnlinked::remove_random_variable(): not permitted");
+void genomegaMap::remove_random_variable(RandomVariable* random_variable) {
+	error("genomegaMap::remove_random_variable(): not permitted");
 }
 
-void omegaMapUnlinked::receive_signal_from_parent(const Value* v, const Variable::Signal sgl) {
+void genomegaMap::receive_signal_from_parent(const Value* v, const Variable::Signal sgl) {
 	if(v==(const Value*)get_mut()) {
 		if(sgl==Variable::_SET) {
 			_mut_changed = true;
@@ -179,4 +178,4 @@ void omegaMapUnlinked::receive_signal_from_parent(const Value* v, const Variable
 	Distribution::receive_signal_from_parent(v,sgl);
 }
 	
-} // namespace gcat_omegaMap
+} // namespace genomegaMap
