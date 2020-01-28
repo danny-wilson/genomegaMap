@@ -27,12 +27,12 @@ namespace genomegaMap {
 	
 // DISTRIBUTIONS
 
-/*	<xs:element name="omegaMapUnlinked">
-		<xs:complexType>
-			<xs:attribute name="id" type="xs:string" use="required"/>
-			<xs:attribute name="mut" type="xs:string" use="required"/>
-		</xs:complexType>
-	</xs:element>
+/*	<xs:element name="genomegaMap" substitutionGroup="abstract_distribution">
+			<xs:complexType>
+				<xs:attribute name="id" type="xs:string" use="required"/>
+				<xs:attribute name="mut" type="xs:string" use="required"/>
+			</xs:complexType>
+		</xs:element>
  */
 class genomegaMap_XMLParser : public DAGXMLParserTemplate<genomegaMap_XMLParser> {
 public:

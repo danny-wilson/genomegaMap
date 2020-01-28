@@ -20,7 +20,7 @@
 
 extern "C" {
 	gcat::xsd_string load_gcat_library() {
-		return gcat_omegaMap::load_omegaMap_library();
+		return genomegaMap::load_genomegaMap_library();
 	}
 }
 

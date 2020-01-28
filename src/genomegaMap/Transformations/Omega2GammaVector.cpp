@@ -23,7 +23,7 @@
  *
  */
 #include <genomegaMap/Transformations/Omega2GammaVector.h>
-#include <genomegaMap/Utilities/omegaMapUtils.h>
+#include <genomegaMap/Utilities/genomegaMapUtils.h>
 
 using namespace gcat;
 
@@ -134,7 +134,7 @@ void Omega2GammaVectorTransform::receive_signal_from_parent(const Value* v, cons
 }
 
 double Omega2GammaVectorTransform::toGamma(const double omega) const {
-	return omega + ((omega>1) ? omegaMapUtils::LambertW(-omega*exp(-omega)) : omegaMapUtils::LambertW1(-omega*exp(-omega)));
+	return omega + ((omega>1) ? genomegaMapUtils::LambertW(-omega*exp(-omega)) : genomegaMapUtils::LambertW1(-omega*exp(-omega)));
 }
 	
 } // namespace genomegaMap

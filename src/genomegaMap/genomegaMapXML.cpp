@@ -23,7 +23,7 @@
 #include <RandomVariables/RandomVariablesXML.h>
 #include <Transformations/TransformationsXML.h>
 #include <Inference/InferenceXML.h>
-#include <genomegaMap/omegaMapXML.h>
+#include <genomegaMap/genomegaMapXML.h>
 #include <genomegaMap/Distributions/genomegaMap.h>
 #include <genomegaMap/RandomVariables/Codon61Count.h>
 #include <genomegaMap/RandomVariables/Codon61Sequence.h>
@@ -31,7 +31,7 @@
 #include <genomegaMap/Transformations/Omega2GammaVector.h>
 #include <genomegaMap/Transformations/ParentDependentRateMatrix.h>
 #include <genomegaMap/Inference/MCMC/genomegaMapMoves.h>
-#include <genomegaMap/omegaMap1.0.xsd.h>
+#include <genomegaMap/genomegaMap1.0.xsd.h>
 #include <stdexcept>
 
 using namespace gcat;
@@ -40,12 +40,12 @@ namespace genomegaMap {
 
 // DISTRIBUTIONS
 
-genomegaMapUnlinked_XMLParser::genomegaMapUnlinked_XMLParser(const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname, const Attributes& attrs, DAGXMLMasterParser* const master_parser, DAGXMLParser* const parent_parser) : DAGXMLParserTemplate<omegaMapUnlinked_XMLParser>(master_parser,parent_parser) {
+genomegaMap_XMLParser::genomegaMap_XMLParser(const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname, const Attributes& attrs, DAGXMLMasterParser* const master_parser, DAGXMLParser* const parent_parser) : DAGXMLParserTemplate<genomegaMap_XMLParser>(master_parser,parent_parser) {
 	// Read in the attributes
 	const int nattr = 2;
 	const char* attrNames[nattr] = {"id","mut"};
 	vector<string> sattr = attributesToStrings(nattr,attrNames,attrs);
-	new omegaMapUnlinked(sattr[0],getDAG());
+	new genomegaMap(sattr[0],getDAG());
 	getDAG()->assign_parameter_to_distribution(sattr[0],attrNames[1],sattr[1]);
 }
 
@@ -260,7 +260,7 @@ xsd_string load_genomegaMap_library() {
 	// SCHEMA
 	string s(genomegaMap1_0_xsd_len,' ');
 	unsigned int i;
-	for(i=0;i<genomegaMap1_0_xsd_len;i++) s[i] = omegaMap1_0_xsd[i];
+	for(i=0;i<genomegaMap1_0_xsd_len;i++) s[i] = genomegaMap1_0_xsd[i];
 	return s;
 }
 
