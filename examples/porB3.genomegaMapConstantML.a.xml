@@ -1,6 +1,6 @@
 <?xml version="1.1"?>
-<!-- genomegaMap -->
-<!-- This template is set up to infer a single dN/dS parameter (omega) per gene -->
+<!-- genomegaMap maximum likelihood constant omega example -->
+<!-- This template is set up to infer a single dN/dS parameter (omega) per gene by maximum likelihood -->
 <gcat xmlns="http://www.danielwilson.me.uk/gcat">
 	<libraries>
 		<library file="libgenomegaMap.so"/>
@@ -13,46 +13,27 @@
 	<parameters>
 		<continuous_scalar id="theta" distribution="theta~" value="0.17"/>
 		<continuous_scalar id="kappa" distribution="kappa~" value="1.0"/>
-		<continuous_mosaic id="omega" distribution="omega~" length="seqs" boundaries="0" values="1"/>
+		<continuous_scalar id="omega" distribution="omega~" value="1.0"/>
 		<continuous_vector id="pi">
 			0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508
 		</continuous_vector>
 	</parameters>
 
 	<transformations>
+	        <to_continuous_mosaic id="omegas" x="omega" length="seqs"/>
         <!-- Imitate omegaMap using an NY98 mutation model in place of a codon HKY98 -->
-		<ny98_pdrm id="mut" theta="theta" kappa="kappa" omega="omega" pi="pi" length="seqs"/>
+		<ny98_pdrm id="mut" theta="theta" kappa="kappa" omega="omegas" pi="pi" length="seqs"/>
         <!-- -->
-        <!-- The following is not needed since there is only ever one block. Instead the first omega is plucked out to save file space
-		<continuous_mosaic_num_blocks id="nblo" continuous_mosaic="omega"/> -->
-        <continuous_vector_element id="omega0" vector="omega" element="0"/>
 	</transformations>
 
 	<distributions>
-		<!-- Priors -->
-        <improper_log_uniform_distribution id="theta~"/>
-        <improper_log_uniform_distribution id="kappa~"/>
-		<gamma_distribution id="marginal_omega~" shape="1" scale="1"/>
-		<continuous_mosaic_distribution id="omega~" p="0.000001" marginal="marginal_omega~"/>
+	        <!-- No priors since the likelihood, not posterior, is to be maximized -->
 		<!-- Likelihood -->
 		<genomegaMap id="seqs~" mut="mut"/>
 	</distributions>
 
-	<mcmc niter="10000" seed="timer" screen_update="1">
-		<log_uniform_proposal parameter="theta" half-width=".2" weight="1"/>
-		<log_uniform_proposal parameter="kappa" half-width=".5" weight="1"/>
-		<continuous_mosaic_log_uniform_proposal parameter="omega" half-width="1" weight="1"/>
-        
-<!--	These moves are disallowed so the initial configuration of a single gene-wide block is retained
-        <continuous_mosaic_extend_block parameter="omega" mean_extension="10" weight="30"/>
-        <continuous_mosaic_splitmerge_block parameter="omega" p="0.033" weight="30" mean_type="geometric"/> -->
-
-		<log burnin="0" thinning="5" file="porB3.genomegaMapConstant.a.mcmc.txt">
-			<parameter idref="theta"/>
-			<parameter idref="kappa"/>
-			<parameter idref="omega0"/>
-			<loglikelihood idref="seqs"/>
-		</log>
-	</mcmc>
+	<powell>
+	        theta kappa omega
+	</powell>
 
 </gcat>
