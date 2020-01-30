@@ -1,4 +1,4 @@
-FROM dannywilson/genomegaMap
+FROM dannywilson/gcat-project
 LABEL app="GenomegaMap"
 LABEL description="Within-species genome-wide dN/dS estimation from very many genomes"
 LABEL maintainer="Daniel Wilson"
