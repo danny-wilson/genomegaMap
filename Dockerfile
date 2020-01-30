@@ -3,7 +3,7 @@ LABEL app="GenomegaMap"
 LABEL description="Within-species genome-wide dN/dS estimation from very many genomes"
 LABEL maintainer="Daniel Wilson"
 LABEL build-type="From source"
-ENV MKDIR /tmp/libgenomegaMap
+ENV MKDIR /libgenomegaMap
 RUN mkdir $MKDIR
 COPY . $MKDIR
 WORKDIR $MKDIR
