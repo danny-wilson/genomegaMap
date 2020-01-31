@@ -1,7 +1,7 @@
 /*  Copyright 2018 Daniel Wilson.
  *
  *  genomegaMapXML.cpp
- *  Part of the omegaMap library.
+ *  Part of the genomegaMap library.
  *
  *  The genomegaMap library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
