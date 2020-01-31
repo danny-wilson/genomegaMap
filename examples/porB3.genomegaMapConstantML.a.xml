@@ -3,38 +3,47 @@
 <!-- This template is set up to infer a single dN/dS parameter (omega) per gene by maximum likelihood -->
 <gcat xmlns="http://www.danielwilson.me.uk/gcat">
 	<libraries>
+		<!-- Location of the genomegaMap shared object (dynamic library) -->
 		<library file="libgenomegaMap.so"/>
 	</libraries>
 
 	<data>
+		<!-- Location of the FASTA-format sequences. Can also be specified as codon frequencies: see XML reference -->
 		<codon_count id="seqs" distribution="seqs~" file="porB3.carriage.noindels.txt"/>
 	</data>
 
 	<parameters>
-	        <!-- Maximum likelihood setting requires no distributions for parameters -->
+		<!-- Definitions of parameters and their initial values -->
+		<!-- Maximum likelihood setting requires no distributions for parameters -->
+		<!-- Diversity parameter -->
 		<continuous_scalar id="theta" distribution="" value="0.17"/>
+		<!-- Transition:transversion ratio -->
 		<continuous_scalar id="kappa" distribution="" value="1.0"/>
+		<!-- dN/dS ratio -->
 		<continuous_scalar id="omega" distribution="" value="1.0"/>
+		<!-- Codon frequencies (excluding STOP codons) in the order
+			TTT TTC TTA TTG TCT TCC TCA TCG TAT TAC TGT TGC TGG CTT CTC CTA CTG CCT CCC CCA CCG CAT CAC CAA CAG CGT CGC CGA CGG ATT ATC ATA ATG ACT ACC ACA ACG AAT AAC AAA AAG AGT AGC AGA AGG GTT GTC GTA GTG GCT GCC GCA GCG GAT GAC GAA GAG GGT GGC GGA GGG
+		 -->
 		<continuous_vector id="pi">
 			0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508
 		</continuous_vector>
 	</parameters>
 
 	<transformations>
+			<!-- Assume the same value of omega for every codon in the alignment -->
 	        <to_continuous_mosaic id="omegas" x="omega" length="seqs"/>
-        <!-- Imitate omegaMap using an NY98 mutation model in place of a codon HKY98 -->
-		<ny98_pdrm id="mut" theta="theta" kappa="kappa" omega="omegas" pi="pi" length="seqs"/>
-        <!-- -->
+			<!-- Specify the NY98 mutation model rate matrices for the alignment -->
+			<ny98_pdrm id="mut" theta="theta" kappa="kappa" omega="omegas" pi="pi" length="seqs"/>
 	</transformations>
 
 	<distributions>
 	        <!-- No priors since the likelihood, not posterior, is to be maximized -->
-		<!-- Likelihood -->
-		<genomegaMap id="seqs~" mut="mut"/>
+			<!-- Likelihood function for genomegaMap -->
+			<genomegaMap id="seqs~" mut="mut"/>
 	</distributions>
 
 	<powell>
+			<!-- Parameters to be optimized with respect to the likelihood -->
 	        theta kappa omega
 	</powell>
-
 </gcat>

@@ -1,5 +1,5 @@
 <?xml version="1.1"?>
-<!-- genomegaMap Bayesian inference sliding window model example  -->
+<!-- genomegaMap Bayesian inference independent codon model example  -->
 <!-- This template is set up to infer variation in dN/dS (omega) along the gene -->
 <gcat xmlns="http://www.danielwilson.me.uk/gcat">
 	<libraries>
@@ -21,8 +21,8 @@
 		<!-- Transition:transversion ratio -->
 		<continuous_scalar id="kappa" distribution="kappa~" value="1.0"/>
 		<!-- dN/dS ratio -->
-		<!-- This is a mosaic (piecewise constant vector) initialized with a single boundary -->
-		<continuous_mosaic id="omega" distribution="omega~" length="seqs" boundaries="0" values="1"/>
+		<!-- This is a mosaic (piecewise constant vector) initialized with a boundary at every position -->
+		<continuous_mosaic id="omega" distribution="omega~" length="seqs" boundaries="-1" values="0.2"/>
 		<!-- Codon frequencies (excluding STOP codons) in the order
 			TTT TTC TTA TTG TCT TCC TCA TCG TAT TAC TGT TGC TGG CTT CTC CTA CTG CCT CCC CCA CCG CAT CAC CAA CAG CGT CGC CGA CGG ATT ATC ATA ATG ACT ACC ACA ACG AAT AAC AAA AAG AGT AGC AGA AGG GTT GTC GTA GTG GCT GCC GCA GCG GAT GAC GAA GAG GGT GGC GGA GGG
 		 -->
@@ -50,21 +50,17 @@
 		<genomegaMap id="seqs~" mut="mut"/>
 	</distributions>
 
-	<mcmc niter="500000" seed="timer" screen_update="1">
+	<mcmc niter="1000000" seed="timer" screen_update="1">
 		<!-- Metropolis Hastings proposals for the parameters -->
 		<log_uniform_proposal parameter="theta" half-width=".1" weight="1"/>
 		<log_uniform_proposal parameter="kappa" half-width=".5" weight="1"/>
-		<continuous_mosaic_log_uniform_proposal parameter="omega" half-width="1" weight="30"/>
-		<!-- Reversible jump proposals for changing the omega block boundaries -->
-		<continuous_mosaic_extend_block parameter="omega" mean_extension="10" weight="30"/>
-		<continuous_mosaic_splitmerge_block parameter="omega" p="0.033" weight="30" mean_type="geometric"/>
+		<continuous_mosaic_log_uniform_proposal parameter="omega" half-width="1" weight="100"/>
 
-		<log burnin="0" thinning="250" file="porB3.genomegaMap.a.mcmc.txt">
+		<log burnin="0" thinning="500" file="porB3.genomegaMap.a.mcmc.txt">
 			<!-- Parameters to be output -->
 			<parameter idref="theta"/>
 			<parameter idref="kappa"/>
 			<parameter idref="omega"/>
-			<parameter idref="nblo"/>
 			<!-- Log conditional probability masses/densities to be output -->
 			<loglikelihood idref="seqs"/>
 		</log>

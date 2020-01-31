@@ -1,58 +1,67 @@
 <?xml version="1.1"?>
-<!-- genomegaMap -->
+<!-- genomegaMap Bayesian inference constant omega example  -->
 <!-- This template is set up to infer a single dN/dS parameter (omega) per gene -->
 <gcat xmlns="http://www.danielwilson.me.uk/gcat">
 	<libraries>
+		<!-- Location of the genomegaMap shared object (dynamic library) -->
 		<library file="libgenomegaMap.so"/>
 	</libraries>
 
 	<data>
+		<!-- Location of the FASTA-format sequences. Can also be specified as codon frequencies: see XML reference -->
 		<codon_count id="seqs" distribution="seqs~" file="porB3.carriage.noindels.txt"/>
 	</data>
 
 	<parameters>
+		<!-- Definitions of parameters and their initial values -->
+		<!-- Bayesian inference requires prior distributions for parameters -->
+		<!-- Diversity parameter -->
 		<continuous_scalar id="theta" distribution="theta~" value="0.17"/>
+		<!-- Transition:transversion ratio -->
 		<continuous_scalar id="kappa" distribution="kappa~" value="1.0"/>
+		<!-- dN/dS ratio -->
+		<!-- This is a mosaic (piecewise constant vector) initialized with a single boundary -->
 		<continuous_mosaic id="omega" distribution="omega~" length="seqs" boundaries="0" values="1"/>
+		<!-- Codon frequencies (excluding STOP codons) in the order
+			TTT TTC TTA TTG TCT TCC TCA TCG TAT TAC TGT TGC TGG CTT CTC CTA CTG CCT CCC CCA CCG CAT CAC CAA CAG CGT CGC CGA CGG ATT ATC ATA ATG ACT ACC ACA ACG AAT AAC AAA AAG AGT AGC AGA AGG GTT GTC GTA GTG GCT GCC GCA GCG GAT GAC GAA GAG GGT GGC GGA GGG
+		 -->
 		<continuous_vector id="pi">
 			0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508 0.0163934426229508
 		</continuous_vector>
 	</parameters>
 
 	<transformations>
-        <!-- Imitate omegaMap using an NY98 mutation model in place of a codon HKY98 -->
+		<!-- Specify the NY98 mutation model rate matrices for the alignment -->
 		<ny98_pdrm id="mut" theta="theta" kappa="kappa" omega="omega" pi="pi" length="seqs"/>
-        <!-- -->
-        <!-- The following is not needed since there is only ever one block. Instead the first omega is plucked out to save file space
-		<continuous_mosaic_num_blocks id="nblo" continuous_mosaic="omega"/> -->
+		<!-- Extract the first element of the omega vector for output -->
         <continuous_vector_element id="omega0" vector="omega" element="0"/>
 	</transformations>
 
 	<distributions>
 		<!-- Priors -->
+		<!-- Improper priors are specified for theta and kappa -->
         <improper_log_uniform_distribution id="theta~"/>
         <improper_log_uniform_distribution id="kappa~"/>
+		<!-- The prior on omega is specified in two steps and cannot be improper -->
 		<gamma_distribution id="marginal_omega~" shape="1" scale="1"/>
 		<continuous_mosaic_distribution id="omega~" p="0.000001" marginal="marginal_omega~"/>
-		<!-- Likelihood -->
+		<!-- Likelihood function for genomegaMap -->
 		<genomegaMap id="seqs~" mut="mut"/>
 	</distributions>
 
 	<mcmc niter="10000" seed="timer" screen_update="1">
+		<!-- Metropolis Hastings proposals for the parameters -->
 		<log_uniform_proposal parameter="theta" half-width=".2" weight="1"/>
 		<log_uniform_proposal parameter="kappa" half-width=".5" weight="1"/>
 		<continuous_mosaic_log_uniform_proposal parameter="omega" half-width="1" weight="1"/>
-        
-<!--	These moves are disallowed so the initial configuration of a single gene-wide block is retained
-        <continuous_mosaic_extend_block parameter="omega" mean_extension="10" weight="30"/>
-        <continuous_mosaic_splitmerge_block parameter="omega" p="0.033" weight="30" mean_type="geometric"/> -->
 
 		<log burnin="0" thinning="5" file="porB3.genomegaMapConstant.a.mcmc.txt">
+			<!-- Parameters to be output -->
 			<parameter idref="theta"/>
 			<parameter idref="kappa"/>
 			<parameter idref="omega0"/>
+			<!-- Log conditional probability masses/densities to be output -->
 			<loglikelihood idref="seqs"/>
 		</log>
 	</mcmc>
-
 </gcat>
