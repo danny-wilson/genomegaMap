@@ -56,7 +56,7 @@
 		<log_uniform_proposal parameter="kappa" half-width=".5" weight="1"/>
 		<continuous_mosaic_log_uniform_proposal parameter="omega" half-width="1" weight="100"/>
 
-		<log burnin="0" thinning="500" file="porB3.genomegaMap.a.mcmc.txt">
+		<log burnin="0" thinning="500" file="porB3.genomegaMapIndependent.a.mcmc.txt">
 			<!-- Parameters to be output -->
 			<parameter idref="theta"/>
 			<parameter idref="kappa"/>
