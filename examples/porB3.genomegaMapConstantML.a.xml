@@ -42,8 +42,8 @@
 			<genomegaMap id="seqs~" mut="mut"/>
 	</distributions>
 
+	<!-- Parameters to be optimized with respect to the likelihood -->
 	<powell>
-			<!-- Parameters to be optimized with respect to the likelihood -->
 	        theta kappa omega
 	</powell>
 </gcat>
